@@ -1,0 +1,8 @@
+.{
+    .name = .dsp_zig,
+    .version = "0.1.0",
+    .fingerprint = 0x3b10fe4f1c782aad,
+    .minimum_zig_version = "0.14.0",
+    .dependencies = .{},
+    .paths = .{""},
+}
