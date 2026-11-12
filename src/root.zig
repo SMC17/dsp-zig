@@ -1,8 +1,5 @@
-/// dsp-zig — Formally-gated digital signal processing.
-///
-/// Every function carrying a proof gate annotation will fail to compile if the
-/// backing mathematical claim has been formally refuted in Lean 4.
-/// Zero runtime cost: Gate(claim) is a zero-size struct.
+/// dsp-zig — digital signal processing prototypes.
+/// Gate parameters are empty placeholders, not connected formal verification.
 const std = @import("std");
 const math = std.math;
 const Complex = std.math.Complex;

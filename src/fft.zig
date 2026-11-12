@@ -1,8 +1,5 @@
-/// Cooley-Tukey radix-2 FFT with formally-verified convolution theorem gate.
-///
-/// The convolution theorem (F{a*b} = F{a}·F{b}) is formally proved in
-/// QuantLib.Signals.ConvolutionTheorem. The Gate annotation enforces this at
-/// compile time: if that claim is ever refuted, convolve() stops compiling.
+/// Cooley-Tukey radix-2 FFT. Gate parameters below are placeholders,
+/// not a connected proof checker. Numerical agreement is checked separately.
 const std = @import("std");
 const math = std.math;
 const Complex = std.math.Complex(f64);
@@ -59,21 +56,18 @@ pub fn ifft(buf: []Complex) void {
 /// Caller owns the returned slice (allocator required).
 pub fn rfft(allocator: std.mem.Allocator, real_in: []const f64) ![]Complex {
     const N = real_in.len;
-    assert(math.isPowerOfTwo(N));
+    if (N == 0 or !math.isPowerOfTwo(N)) return error.InvalidLength;
     const buf = try allocator.alloc(Complex, N);
+    defer allocator.free(buf);
     for (real_in, 0..) |x, k| buf[k] = .{ .re = x, .im = 0.0 };
     fft(buf);
     const out = try allocator.alloc(Complex, N / 2 + 1);
     @memcpy(out, buf[0 .. N / 2 + 1]);
-    allocator.free(buf);
     return out;
 }
 
-/// Linear convolution via FFT (overlap-add, zero-pad to next power of 2).
-/// Gate: fft_convolution_theorem must be formally confirmed.
-///
-/// The compile-time zero-size parameter `_gate` enforces that the claim
-/// fft_convolution_theorem is confirmed in proof_manifest.json.
+/// Linear convolution via FFT, zero-padded to the next power of two.
+/// `_gate` is a legacy placeholder; no proof manifest is checked.
 pub fn convolve(
     comptime _gate: GateConvolution,
     allocator: std.mem.Allocator,
@@ -81,6 +75,7 @@ pub fn convolve(
     b: []const f64,
 ) ![]f64 {
     _ = _gate;
+    if (a.len == 0 or b.len == 0) return error.EmptySignal;
     const out_len = a.len + b.len - 1;
     var n: usize = 1;
     while (n < out_len) n <<= 1;
@@ -103,8 +98,7 @@ pub fn convolve(
     return result;
 }
 
-/// Compile-time gate type — zero-size when fft_convolution_theorem is confirmed.
-/// Pulled from proof_manifest.json at build time by proof-gate-zig.
+/// Placeholder type retained for source compatibility. No proof dependency.
 const GateConvolution = struct {};
 
 // ── arithmetic helpers ───────────────────────────────────────────────────────
@@ -163,4 +157,23 @@ test "ifft inverts fft" {
         try std.testing.expectApproxEqAbs(orig[k].re, x.re, 1e-9);
         try std.testing.expectApproxEqAbs(orig[k].im, x.im, 1e-9);
     }
+}
+
+fn rfftAllocationScenario(allocator: std.mem.Allocator) !void {
+    const out = try rfft(allocator, &.{ 1, 2, 3, 4 });
+    defer allocator.free(out);
+}
+
+test "rfft cleans up intermediate storage on every allocation failure" {
+    try std.testing.checkAllAllocationFailures(std.testing.allocator, rfftAllocationScenario, .{});
+}
+
+test "rfft refuses empty and non-power-of-two inputs" {
+    try std.testing.expectError(error.InvalidLength, rfft(std.testing.allocator, &.{}));
+    try std.testing.expectError(error.InvalidLength, rfft(std.testing.allocator, &.{ 1, 2, 3 }));
+}
+
+test "convolution refuses empty inputs" {
+    try std.testing.expectError(error.EmptySignal, convolve(.{}, std.testing.allocator, &.{}, &.{1}));
+    try std.testing.expectError(error.EmptySignal, convolve(.{}, std.testing.allocator, &.{1}, &.{}));
 }

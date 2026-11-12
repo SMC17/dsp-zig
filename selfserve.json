@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "project": "dsp-zig",
+  "visibility": "private",
+  "systems": [
+    "Darwin",
+    "Linux"
+  ],
+  "required_files": [
+    "README.md",
+    "LICENSE"
+  ],
+  "task": "Check every FFT bin against a direct DFT and linear convolution against a direct sum.",
+  "steps": [
+    {
+      "name": "unit tests",
+      "argv": [
+        "zig",
+        "build",
+        "test",
+        "-Doptimize=ReleaseSafe",
+        "--summary",
+        "all"
+      ],
+      "minimum_tests": 16
+    },
+    {
+      "name": "install fixture binary",
+      "argv": [
+        "zig",
+        "build",
+        "-Doptimize=ReleaseSafe"
+      ]
+    },
+    {
+      "name": "synthetic task",
+      "argv": [
+        "zig",
+        "build",
+        "demo",
+        "-Doptimize=ReleaseSafe"
+      ],
+      "contains": "DSP_FIXTURE_OK dft_bins=31 inverse_bins=31 convolution_cases=2"
+    }
+  ],
+  "bundle_paths": [
+    "zig-out/bin/dsp-reference"
+  ],
+  "limitations": [
+    "Finite small-signal numerical comparisons at absolute tolerance 1e-9; no stability, throughput or hardware claim.",
+    "Gate types are empty placeholders, not a connected formal proof system.",
+    "Private package; automated release requires the configured acceptance gates and an intentional tag."
+  ]
+}
