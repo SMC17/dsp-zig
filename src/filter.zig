@@ -5,7 +5,7 @@
 const std = @import("std");
 
 /// Symmetric linear-phase FIR filter, comptime tap count.
-/// Gate enforces that the linear phase theorem is confirmed.
+/// Gate parameter is a placeholder; no proof checker is connected.
 pub fn FIR(comptime N: usize) type {
     return struct {
         coeffs: [N]f64,
@@ -35,7 +35,7 @@ pub fn FIR(comptime N: usize) type {
 }
 
 /// Direct Form II IIR biquad — second-order section.
-/// Gate enforces iir_stability_criterion is confirmed.
+/// Gate parameter is a placeholder, not a stability certificate.
 pub const Biquad = struct {
     b0: f64, b1: f64, b2: f64,
     a1: f64, a2: f64,

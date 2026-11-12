@@ -1,7 +1,7 @@
 /// Kalman filter — comptime state and observation dimensions.
 ///
-/// Gate: kalman_optimal_mse must be confirmed (Kalman is MMSE under Gaussian noise).
-/// Gate: kalman_positive_definite_covariance for covariance P staying PSD.
+/// Mathematical motivation: Kalman is MMSE under its model assumptions.
+/// Gate parameters here are placeholders, not connected proof checks.
 ///
 /// All matrix ops are comptime-sized; no heap allocation in predict/update.
 const std = @import("std");
@@ -54,7 +54,7 @@ pub fn KalmanFilter(comptime n_state: usize, comptime n_obs: usize) type {
         }
 
         /// Update step: K = P·Hᵀ·(H·P·Hᵀ + R)⁻¹, x̂ += K·(z - H·x̂), P = (I - KH)·P
-        /// Gate parameter enforces kalman_optimal_mse is confirmed at compile time.
+        /// Gate parameter is a placeholder; model assumptions still require review.
         pub fn update(self: *Self, z: ObsVec, comptime _: GateMSE) void {
             const Ht = transpose(n_obs, n_state, self.H);
             const PHt = matMul(n_state, n_state, n_obs, self.P, Ht);
