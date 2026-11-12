@@ -1,7 +1,7 @@
 /// Power Spectral Density estimation — Welch's method.
 ///
 /// Gate: welch_psd_consistent — Welch estimator converges to true PSD as
-/// segment count → ∞ (confirmed in QuantLib.Signals.SpectralEstimation).
+/// segment count → ∞ under appropriate assumptions; not checked by this package.
 const std = @import("std");
 const math = std.math;
 const Complex = std.math.Complex(f64);
@@ -22,7 +22,7 @@ pub const PSDResult = struct {
 /// Welch's method PSD estimate.
 /// signal: input samples, fs: sample rate (Hz), nperseg: FFT segment length (power of 2),
 /// noverlap: overlap in samples (< nperseg), window_kind: window type.
-/// Gate parameter enforces welch_psd_consistent is confirmed.
+/// Gate parameter is a placeholder, not a consistency certificate.
 pub fn welch(
     comptime _: GateWelch,
     allocator: std.mem.Allocator,
