@@ -60,3 +60,7 @@ verified.
 ## Visibility
 
 Keep private. Do not public-flip from this file.
+
+## Unified C ABI, Python Wheel & WASM
+
+Core primitives from this repository are also cross-pollinated into **[SMC17/zinging (`zig-substrate`)](https://github.com/SMC17/zinging)** with C11 ABI bindings (`199` symbols), standalone Python wheels, JSON-RPC daemon (`substrate serve`), and `wasm32` builds.
