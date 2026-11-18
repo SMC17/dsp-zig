@@ -1,5 +1,7 @@
 # dsp-zig
 
+**[Status](STATUS.md) · [Roadmap](ROADMAP.md) · [Contributing](CONTRIBUTING.md) · [Issues](https://github.com/SMC17/dsp-zig/issues) · [Public roadmap](https://github.com/users/SMC17/projects/16)**
+
 Private OSS library (FFT / Kalman / FIR / windows / Welch PSD). Not a
 company, not a primitives product, not a Zig standard-library substitute.
 
